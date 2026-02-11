@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { userActivityRoute } from "./modules/user-activity/routes";
 import { CustomError } from "./shared/error";
+import { authRoute } from "./modules/auth/routes";
 
 const app = new Elysia({ prefix: "/api" })
   .onError(({ code, error, set }) => {
@@ -16,6 +17,7 @@ const app = new Elysia({ prefix: "/api" })
     return "Unknown Error";
   })
   .use(userActivityRoute)
+  .use(authRoute)
   .listen(3000);
 
 console.log(

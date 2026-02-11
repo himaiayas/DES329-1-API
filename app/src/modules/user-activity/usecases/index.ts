@@ -1,7 +1,7 @@
 import { UserActivity } from "../models";
 import { userActivityRepo } from "../repository";
 
-export async function userGetActivities({
+export async function userGetActivitiesUseCase({
   userId,
 }: {
   userId: UserActivity["organizerId"];

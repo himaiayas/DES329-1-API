@@ -1,4 +1,3 @@
-//userRepo = {fucntions}
 import { db } from "../../../db";
 import { activitiesTable } from "../../../db/schemas";
 import { findOneOrThrow } from "../../../db/utils";
