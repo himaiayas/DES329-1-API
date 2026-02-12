@@ -1,6 +1,8 @@
 import { Elysia } from "elysia";
 import { userActivityRoute } from "./modules/user-activity/routes";
 import { CustomError } from "./shared/error";
+import { adminRoutes } from "./modules/admin/routes";
+import { openapi } from '@elysiajs/openapi'
 
 const app = new Elysia({ prefix: "/api" })
   .onError(({ code, error, set }) => {
@@ -16,6 +18,8 @@ const app = new Elysia({ prefix: "/api" })
     return "Unknown Error";
   })
   .use(userActivityRoute)
+  .use(adminRoutes)
+  .use(openapi())
   .listen(3000);
 
 console.log(
