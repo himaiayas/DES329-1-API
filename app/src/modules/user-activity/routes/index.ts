@@ -11,3 +11,4 @@ export const userActivityRoute = new Elysia().get(
     return activities;
   }
 );
+
