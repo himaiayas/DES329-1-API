@@ -6,12 +6,12 @@ import { findOneOrThrow } from "../../../db/utils";
 export const adminUseCases = {
   // Fetch everyone
   getData: async () : Promise<UserEntry[]> => {
-    const allUsers  = await adminRepository.fetchAll;
+    const allUsers = await adminRepository.fetchAll();
     return allUsers;
   },
 
   // Delete any user or guest
-  removeUser: async ( { userId } : { userId: UserEntry["id"]  }) => {
+  removeUser: async ( { userId } : { userId: UserEntry["id"]  }) : Promise<UserEntry> => {
     const result = await adminRepository.deleteById( { userId } );
     
     return findOneOrThrow(result);

@@ -1,16 +1,16 @@
 import { db } from "../../../db";
-import { usersTable } from "../../../db/schemas";
+import { roleEnum, usersTable } from "../../../db/schemas";
 import { eq, or } from "drizzle-orm";
 import { UserEntry } from "../models";
 
 export const adminRepository = {
-  fetchAll: async () => {
-    return await db.select().from(usersTable);
+  fetchAll: async () : Promise<UserEntry[]> => {
+    return (await db.select().from(usersTable));
   },
 
-  deleteById: async ( { userId }: { userId: UserEntry["id"]  } ) => {
+  deleteById: async ( { userId }: { userId: UserEntry["id"]  } ) : Promise<UserEntry[]> => {
     return await db.delete(usersTable)
-      .where(eq(usersTable, userId))
+      .where(eq(usersTable.id, userId))
       .returning();
   }
 };
