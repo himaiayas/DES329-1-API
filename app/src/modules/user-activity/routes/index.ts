@@ -1,13 +1,7 @@
 import { Elysia } from "elysia";
-import { userGetActivitiesUseCase } from "../usecases";
+import { userGetActivitiesRoute } from "./get-activity.route";
+import { userCreateActivitiyRoute } from "./create-activity.route";
 
-export const userActivityRoute = new Elysia().get(
-  "/user/activity",
-  async ({ set }) => {
-    const userId = "9b19d4e7-04fd-4dde-aefa-582766403627";
-    const activities = await userGetActivitiesUseCase({ userId });
-
-    set.status = 200;
-    return activities;
-  }
-);
+export const userActivityRoute = new Elysia()
+  .use(userGetActivitiesRoute)
+  .use(userCreateActivitiyRoute);

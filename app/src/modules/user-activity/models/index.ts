@@ -8,5 +8,11 @@ export type UserActivity = Static<typeof userActivitySchema>;
 const _createUserActivitySchema = createInsertSchema(activitiesTable);
 export const createUserActivitySchema = t.Omit(_createUserActivitySchema, [
   "organizerId",
+  "id",
+  "createdAt",
+  "updatedAt",
 ]);
 export type CreateUserActivity = Static<typeof createUserActivitySchema>;
+
+export const updateUserActivitySchema = t.Partial(createUserActivitySchema);
+export type UpdateUserActivity = Static<typeof updateUserActivitySchema>;
