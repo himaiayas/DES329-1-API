@@ -1,8 +1,13 @@
+import { QueryResult } from "pg";
 import { db } from "../../../db";
 import { activitiesTable } from "../../../db/schemas";
 import { findOneOrThrow } from "../../../db/utils";
-import type { CreateUserActivity, UserActivity } from "../models";
-import { eq } from "drizzle-orm";
+import type {
+  CreateUserActivity,
+  UpdateUserActivity,
+  UserActivity,
+} from "../models";
+import { eq, and } from "drizzle-orm";
 
 async function getByUser({
   userId,
@@ -15,7 +20,7 @@ async function getByUser({
     .where(eq(activitiesTable.organizerId, userId));
 }
 
-async function create({
+async function createActivity({
   data,
   userId,
 }: {
@@ -29,7 +34,42 @@ async function create({
     .then(findOneOrThrow);
 }
 
+async function updateActivity({
+  data,
+  userId,
+  id,
+}: {
+  data: UpdateUserActivity;
+  userId: UserActivity["organizerId"];
+  id: UserActivity["id"];
+}): Promise<UserActivity> {
+  return db
+    .update(activitiesTable)
+    .set(data)
+    .where(
+      and(eq(activitiesTable.id, id), eq(activitiesTable.organizerId, userId))
+    )
+    .returning()
+    .then(findOneOrThrow);
+}
+
+async function deleteActivity({
+  id,
+  userId,
+}: {
+  id: UserActivity["id"];
+  userId: UserActivity["organizerId"];
+}): Promise<QueryResult<never>> {
+  return db
+    .delete(activitiesTable)
+    .where(
+      and(eq(activitiesTable.id, id), eq(activitiesTable.organizerId, userId))
+    );
+}
+
 export const userActivityRepo = {
   getByUser,
-  create,
+  createActivity,
+  updateActivity,
+  deleteActivity,
 };

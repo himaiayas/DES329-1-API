@@ -20,8 +20,7 @@ export const activitiesTable = pgTable("activities", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  date: timestamp("date", { withTimezone: true }),
-  isActive: boolean("is_active").notNull().default(true),
+  date: timestamp("date", { withTimezone: true }).notNull(),
   registrant: registrantEnum("registrant").notNull().default("participant"),
   venue: venueEnum("venue"),
   organizerId: uuid("organizer_id")
