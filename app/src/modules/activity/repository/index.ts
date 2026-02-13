@@ -1,47 +1,36 @@
-import { getColumns } from "drizzle-typebox";
 import { db } from "../../../db";
 import { activitiesTable, usersTable } from "../../../db/schemas";
-import { findOneOrThrow } from "../../../db/utils";
-import { eq, gte, and, like } from "drizzle-orm";
+import { eq, and, like } from "drizzle-orm";
 import { getTableColumns } from "drizzle-orm";
+import { ActivityWithOrganizer, GetActivityQuery } from "../models";
 
+async function getActivities(
+  query: GetActivityQuery
+): Promise<ActivityWithOrganizer[]> {
+  let conds = [];
 
+  console.log(query);
 
+  if (query.registrant) {
+    conds.push(eq(activitiesTable.registrant, query.registrant));
+  }
+  if (query.venue) {
+    conds.push(eq(activitiesTable.venue, query.venue));
+  }
+  if (query.group) {
+    conds.push(like(usersTable.group, `%${query.group}%`));
+  }
 
-const {name, description, date, registrant, venue} = getTableColumns(activitiesTable)
-const {group} = getTableColumns(usersTable)
-
-async function getEvents(query) {
-
-    let conds = [
-        eq(activitiesTable.isActive, true), 
-        gte(activitiesTable.date,new Date())
-        ]
-
-    
-    if ('registrant' in query){
-        conds.push(eq(activitiesTable.registrant, query.registrant))
-    }
-    if ('venue' in query){
-        conds.push(eq(activitiesTable.venue, query.venue))
-    }
-    if ('group' in query){
-        conds.push(like(usersTable.group, `%${query.group}%`))
-    }
-
-
-    return db
-        .select({
-            name, description, date, registrant, venue, group
-        })
-        .from(activitiesTable)
-        .innerJoin(usersTable, eq(activitiesTable.organizerId, usersTable.id))
-        .where(
-            and(
-                ...conds
-            ));
+  return db
+    .select({
+      ...getTableColumns(activitiesTable),
+      group: usersTable.group,
+    })
+    .from(activitiesTable)
+    .innerJoin(usersTable, eq(activitiesTable.organizerId, usersTable.id))
+    .where(and(...conds));
 }
 
 export const activityRepo = {
-  getEvents
+  getActivities,
 };

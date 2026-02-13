@@ -1,7 +1,8 @@
-import { UserActivity } from "../models";
+import { ActivityWithOrganizer, GetActivityQuery } from "../models";
 import { activityRepo } from "../repository";
 
-export async function getActivitiesUseCase(query) {
-  return activityRepo.getEvents(query);
+export async function getActivitiesUseCase(
+  query: GetActivityQuery
+): Promise<ActivityWithOrganizer[]> {
+  return activityRepo.getActivities(query);
 }
-

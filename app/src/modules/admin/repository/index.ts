@@ -1,16 +1,40 @@
 import { db } from "../../../db";
-import { roleEnum, usersTable } from "../../../db/schemas";
-import { eq, or } from "drizzle-orm";
-import { UserEntry } from "../models";
+import { usersTable } from "../../../db/schemas";
+import { eq, getTableColumns, or } from "drizzle-orm";
+import { UpdateUser, User } from "../models";
+import { QueryResult } from "pg";
+import { findOneOrThrow } from "../../../db/utils";
 
-export const adminRepository = {
-  fetchAll: async () : Promise<UserEntry[]> => {
-    return (await db.select().from(usersTable));
-  },
+async function getUsers(): Promise<User[]> {
+  const { hashedPassword, ...columns } = getTableColumns(usersTable);
+  return db.select(columns).from(usersTable);
+}
 
-  deleteById: async ( { userId }: { userId: UserEntry["id"]  } ) : Promise<UserEntry[]> => {
-    return await db.delete(usersTable)
-      .where(eq(usersTable.id, userId))
-      .returning();
-  }
+async function deleteUser({
+  userId,
+}: {
+  userId: User["id"];
+}): Promise<QueryResult<never>> {
+  return db.delete(usersTable).where(eq(usersTable.id, userId));
+}
+
+async function updateUser({
+  data,
+  userId,
+}: {
+  data: UpdateUser;
+  userId: User["id"];
+}): Promise<User> {
+  return db
+    .update(usersTable)
+    .set(data)
+    .where(eq(usersTable.id, userId))
+    .returning()
+    .then(findOneOrThrow);
+}
+
+export const adminRepo = {
+  getUsers,
+  deleteUser,
+  updateUser,
 };
