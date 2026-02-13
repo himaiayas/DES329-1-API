@@ -6,7 +6,7 @@ import { authService } from "../../auth/services";
 export const userCreateActivitiyRoute = new Elysia().post(
   "/user/activity",
   async ({ body, set, cookie }) => {
-    const session = await authService.authUser(cookie);
+    const session = await authService.authOrganizer(cookie);
     const activity = await userCreateActivityUseCase({
       data: {
         ...body,

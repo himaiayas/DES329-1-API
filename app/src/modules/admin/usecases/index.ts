@@ -1,20 +1,27 @@
-import { adminRepository } from "../repository";
-import { UserEntry } from "../models";
-import { findOneOrThrow } from "../../../db/utils";
+import { adminRepo } from "../repository";
+import { UpdateUser, User } from "../models";
+import { CustomError, HTTP_STATUS } from "../../../shared/error";
 
+export async function adminGetUsersUseCase(): Promise<User[]> {
+  const allUsers = await adminRepo.getUsers();
+  return allUsers;
+}
 
-export const adminUseCases = {
-  // Fetch everyone
-  getData: async () : Promise<UserEntry[]> => {
-    const allUsers = await adminRepository.fetchAll();
-    return allUsers;
-  },
+export async function adminDeleteUserUseCase({
+  userId,
+}: {
+  userId: User["id"];
+}): Promise<void> {
+  const { rowCount } = await adminRepo.deleteUser({ userId });
+  if (!rowCount || rowCount === 0) throw new CustomError(HTTP_STATUS.NOT_FOUND);
+}
 
-  // Delete any user or guest
-  removeUser: async ( { userId } : { userId: UserEntry["id"]  }) : Promise<UserEntry> => {
-    const result = await adminRepository.deleteById( { userId } );
-    
-    return findOneOrThrow(result);
-  }
-    
-};
+export async function adminUpdateUserUseCase({
+  userId,
+  data,
+}: {
+  userId: User["id"];
+  data: UpdateUser;
+}): Promise<User> {
+  return adminRepo.updateUser({ data, userId });
+}

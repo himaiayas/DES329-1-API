@@ -26,9 +26,9 @@ async function auth(cookie: any): Promise<SessionWithUser> {
   return authRepo.getSessionWithUserById({ id: sessionId });
 }
 
-async function authUser(cookie: any): Promise<SessionWithUser> {
+async function authOrganizer(cookie: any): Promise<SessionWithUser> {
   const session = await auth(cookie);
-  if (session.user.role === "user") return session;
+  if (session.user.role === "organizer") return session;
   else throw new CustomError(HTTP_STATUS.FORBIDDEN);
 }
 
@@ -42,6 +42,6 @@ export const authService = {
   setCookie,
   removeCookie,
   auth,
-  authUser,
+  authOrganizer,
   authAdmin,
 };

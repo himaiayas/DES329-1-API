@@ -1,12 +1,23 @@
 import { Static, t } from "elysia";
-import { createSelectSchema, createInsertSchema } from "drizzle-typebox";
-import { activitiesTable } from "../../../db/schemas";
+import { createSelectSchema } from "drizzle-typebox";
+import { activitiesTable, usersTable } from "../../../db/schemas";
+import { Simplify } from "drizzle-orm";
 
-export const userActivitySchema = createSelectSchema(activitiesTable);
-export type UserActivity = Static<typeof userActivitySchema>;
+const activitySchema = createSelectSchema(activitiesTable);
+const userSchema = createSelectSchema(usersTable);
+export type Activity = Static<typeof activitySchema>;
 
-const _createUserActivitySchema = createInsertSchema(activitiesTable);
-export const createUserActivitySchema = t.Omit(_createUserActivitySchema, [
-  "organizerId",
-]);
-export type CreateUserActivity = Static<typeof createUserActivitySchema>;
+export type ActivityWithOrganizer = Simplify<
+  Activity & {
+    group: Static<typeof userSchema>["group"];
+  }
+>;
+
+export const getActivityQuerySchema = t.Partial(
+  t.Object({
+    ...t.Pick(activitySchema, ["venue", "registrant"]).properties,
+    group: userSchema.properties.group,
+  })
+);
+
+export type GetActivityQuery = Static<typeof getActivityQuerySchema>;
